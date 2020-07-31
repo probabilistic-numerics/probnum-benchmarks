@@ -1,1 +1,1 @@
-{"regressions": []}
+{"regressions": [["linearsolvers.LinSolve.time_solve('dense')", "graphs/branch-master/machine-cloudrunner/python-3.8/linearsolvers.LinSolve.time_solve.json", {"branch": "master"}, 1, 0.003744542665420643, 0.0021910263996687716, [[null, 491, 0.0021910263996687716, 0.003744542665420643]]]]}
