@@ -76,7 +76,7 @@
         "warmup_time": -1
     },
     "linearsolvers.LinSolve.mem_solve": {
-        "code": "class LinSolve:\n    def mem_solve(self, system):\n        # Solve linear system\n        self.xhat, self.Ahat, self.Ainvhat, _ = problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            self.A, self.b = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = np.array([\n                [2.3, -2.3, 3.5, 4.2, 1.8],\n                [-2.3, 3.0, -3.5, -4.8, -1.9],\n                [3.5, -3.5, 6.9, 5.8, 0.8],\n                [4.2, -4.8, 5.8, 10.1, 6.3],\n                [1.8, -1.9, 0.8, 6.3, 12.1]\n            ])\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
+        "code": "class LinSolve:\n    def mem_solve(self, system):\n        # Solve linear system\n        self.xhat, self.Ahat, self.Ainvhat, _ = problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            self.A, self.b = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = np.array(\n                [\n                    [2.3, -2.3, 3.5, 4.2, 1.8],\n                    [-2.3, 3.0, -3.5, -4.8, -1.9],\n                    [3.5, -3.5, 6.9, 5.8, 0.8],\n                    [4.2, -4.8, 5.8, 10.1, 6.3],\n                    [1.8, -1.9, 0.8, 6.3, 12.1],\n                ]\n            )\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
         "name": "linearsolvers.LinSolve.mem_solve",
         "param_names": [
             "system"
@@ -90,10 +90,10 @@
         "timeout": 60.0,
         "type": "memory",
         "unit": "bytes",
-        "version": "5f89a23f7f1a2da54cdfdb1304351cff79c2ff2ccbca48a1bc002ab792272dd5"
+        "version": "bd3605dee3870caa19ac63e742ac002500017ea2c478edbf6cdd5792dfdf482f"
     },
     "linearsolvers.LinSolve.peakmem_solve": {
-        "code": "class LinSolve:\n    def peakmem_solve(self, system):\n        # Solve linear system\n        self.xhat, self.Ahat, self.Ainvhat, _ = problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            self.A, self.b = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = np.array([\n                [2.3, -2.3, 3.5, 4.2, 1.8],\n                [-2.3, 3.0, -3.5, -4.8, -1.9],\n                [3.5, -3.5, 6.9, 5.8, 0.8],\n                [4.2, -4.8, 5.8, 10.1, 6.3],\n                [1.8, -1.9, 0.8, 6.3, 12.1]\n            ])\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
+        "code": "class LinSolve:\n    def peakmem_solve(self, system):\n        # Solve linear system\n        self.xhat, self.Ahat, self.Ainvhat, _ = problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            self.A, self.b = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = np.array(\n                [\n                    [2.3, -2.3, 3.5, 4.2, 1.8],\n                    [-2.3, 3.0, -3.5, -4.8, -1.9],\n                    [3.5, -3.5, 6.9, 5.8, 0.8],\n                    [4.2, -4.8, 5.8, 10.1, 6.3],\n                    [1.8, -1.9, 0.8, 6.3, 12.1],\n                ]\n            )\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
         "name": "linearsolvers.LinSolve.peakmem_solve",
         "param_names": [
             "system"
@@ -107,10 +107,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "af6eef7ddd7caef365704cfdf46a91503b5d9fb963dac8126745b6ba718b4349"
+        "version": "7b4d2371ef9ae3e9a4e3001899579aa6b1e8b0db9c67458637a0d730ef5f1c7e"
     },
     "linearsolvers.LinSolve.time_solve": {
-        "code": "class LinSolve:\n    def time_solve(self, system):\n        # Solve linear system\n        self.xhat, self.Ahat, self.Ainvhat, _ = problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            self.A, self.b = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = np.array([\n                [2.3, -2.3, 3.5, 4.2, 1.8],\n                [-2.3, 3.0, -3.5, -4.8, -1.9],\n                [3.5, -3.5, 6.9, 5.8, 0.8],\n                [4.2, -4.8, 5.8, 10.1, 6.3],\n                [1.8, -1.9, 0.8, 6.3, 12.1]\n            ])\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
+        "code": "class LinSolve:\n    def time_solve(self, system):\n        # Solve linear system\n        self.xhat, self.Ahat, self.Ainvhat, _ = problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            self.A, self.b = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = np.array(\n                [\n                    [2.3, -2.3, 3.5, 4.2, 1.8],\n                    [-2.3, 3.0, -3.5, -4.8, -1.9],\n                    [3.5, -3.5, 6.9, 5.8, 0.8],\n                    [4.2, -4.8, 5.8, 10.1, 6.3],\n                    [1.8, -1.9, 0.8, 6.3, 12.1],\n                ]\n            )\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
         "min_run_count": 2,
         "name": "linearsolvers.LinSolve.time_solve",
         "number": 0,
@@ -129,7 +129,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "bc59b7a996dbae83510dbeb7fe6d300304bedfd9fce6b8420b24f84416328c01",
+        "version": "41949191d688c48fe1f964ab000a79b84251ff048efe0f1064f5c33ff526623b",
         "warmup_time": -1
     },
     "linearsolvers.PosteriorDist.time_sample": {
