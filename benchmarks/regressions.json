@@ -1,1 +1,1 @@
-{"regressions": [["distribution.Sampling.time_sample('matrixvar_normal')", "graphs/branch-development/machine-barefoot/python-3.8/distribution.Sampling.time_sample.json", {"branch": "development"}, 2, 0.002381642197724432, 0.0020396623003762215, [[null, 571, 0.0020396623003762215, 0.0023785133002093063]]]]}
+{"regressions": []}
