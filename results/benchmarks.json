@@ -75,6 +75,68 @@
         "version": "f20f857be1d0c0f4340e8064e5285dad677a08c3d33aa21133d190a573c4fad8",
         "warmup_time": -1
     },
+    "ivpsolve.IVPSolve.peakmem_solve": {
+        "code": "class IVPSolve:\n    def peakmem_solve(self, method, precond, prior):\n        precond_step = self.stepsize if precond == \"with\" else 1.0\n        probsolve_ivp(\n            self.ivp,\n            method=method,\n            which_prior=prior,\n            step=self.stepsize,\n            precond_step=precond_step,\n        )\n\n    def setup(self, method, precond, prior):\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-2",
+        "name": "ivpsolve.IVPSolve.peakmem_solve",
+        "param_names": [
+            "method",
+            "precond",
+            "prior"
+        ],
+        "params": [
+            [
+                "'eks0'",
+                "'ekf0'"
+            ],
+            [
+                "'with'",
+                "'without'"
+            ],
+            [
+                "'ibm4'",
+                "'ioup4'",
+                "'matern92'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "f460649f4516df7bc424e4f0350b7cfc2dd208230e9c06d8285491593988f934"
+    },
+    "ivpsolve.IVPSolve.time_solve": {
+        "code": "class IVPSolve:\n    def time_solve(self, method, precond, prior):\n        precond_step = self.stepsize if precond == \"with\" else 1.0\n        probsolve_ivp(\n            self.ivp,\n            method=method,\n            which_prior=prior,\n            step=self.stepsize,\n            precond_step=precond_step,\n        )\n\n    def setup(self, method, precond, prior):\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-2",
+        "min_run_count": 2,
+        "name": "ivpsolve.IVPSolve.time_solve",
+        "number": 0,
+        "param_names": [
+            "method",
+            "precond",
+            "prior"
+        ],
+        "params": [
+            [
+                "'eks0'",
+                "'ekf0'"
+            ],
+            [
+                "'with'",
+                "'without'"
+            ],
+            [
+                "'ibm4'",
+                "'ioup4'",
+                "'matern92'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "d3933c374498b2fa3db7d34144fb5d3b301b3f2d7700ab6502db1a5eb96f72f1",
+        "warmup_time": -1
+    },
     "linearsolvers.LinSolve.mem_solve": {
         "code": "class LinSolve:\n    def mem_solve(self, system):\n        # Solve linear system\n        self.xhat, self.Ahat, self.Ainvhat, _ = problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            self.A, self.b = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = np.array(\n                [\n                    [2.3, -2.3, 3.5, 4.2, 1.8],\n                    [-2.3, 3.0, -3.5, -4.8, -1.9],\n                    [3.5, -3.5, 6.9, 5.8, 0.8],\n                    [4.2, -4.8, 5.8, 10.1, 6.3],\n                    [1.8, -1.9, 0.8, 6.3, 12.1],\n                ]\n            )\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
         "name": "linearsolvers.LinSolve.mem_solve",
