@@ -1,1 +1,1 @@
-{"regressions": []}
+{"regressions": [["ivpsolve.IVPSolve.time_solve('eks0', 'without', 'ioup4')", "graphs/branch-master/machine-unitue-mlcloud-probnum/python-3.8/ivpsolve.IVPSolve.time_solve.json", {}, 4, 0.15889081649947912, 0.14216870197560638, [[null, 767, 0.1442112800432369, 0.15889081649947912]]]]}
