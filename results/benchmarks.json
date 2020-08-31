@@ -1,80 +1,4 @@
 {
-    "distribution.Functions.time_distr_functions": {
-        "code": "class Functions:\n    def time_distr_functions(self, dist, property):\n        \"\"\"Times evaluation of the pdf, logpdf, cdf and logcdf.\"\"\"\n        try:\n            if property == \"pdf\":\n                self.randvar.distribution.pdf(x=self.eval_point)\n            elif property == \"logpdf\":\n                self.randvar.distribution.pdf(x=self.eval_point)\n            elif property == \"cdf\":\n                self.randvar.distribution.pdf(x=self.quantile)\n            elif property == \"logcdf\":\n                self.randvar.distribution.pdf(x=self.quantile)\n        except NotImplementedError:\n            pass\n\n    def setup(self, dist, property):\n        self.randvar = get_randvar(distribution_name=dist)\n        self.eval_point = np.random.uniform(self.randvar.shape)\n        self.quantile = np.random.uniform(self.randvar.shape)",
-        "min_run_count": 2,
-        "name": "distribution.Functions.time_distr_functions",
-        "number": 0,
-        "param_names": [
-            "dist",
-            "property"
-        ],
-        "params": [
-            [
-                "'univar_normal'",
-                "'multivar_normal'",
-                "'matrixvar_normal'",
-                "'symmatrixvar_normal'"
-            ],
-            [
-                "'pdf'",
-                "'logpdf'",
-                "'cdf'",
-                "'logcdf'"
-            ]
-        ],
-        "processes": 2,
-        "repeat": 0,
-        "sample_time": 0.01,
-        "timeout": 60.0,
-        "type": "time",
-        "unit": "seconds",
-        "version": "c34be45871a81ba51db14abb809470bf779abec711211d454c4275de8f77a6b4",
-        "warmup_time": -1
-    },
-    "distribution.Sampling.peakmem_sample": {
-        "code": "class Sampling:\n    def peakmem_sample(self, dist):\n        \"\"\"Peak memory of sampling process.\"\"\"\n        self.randvar.sample(self.n_samples)\n\n    def setup(self, dist):\n        np.random.seed(42)\n        self.n_samples = 1000\n        self.randvar = get_randvar(distribution_name=dist)",
-        "name": "distribution.Sampling.peakmem_sample",
-        "param_names": [
-            "dist"
-        ],
-        "params": [
-            [
-                "'univar_normal'",
-                "'multivar_normal'",
-                "'matrixvar_normal'",
-                "'symmatrixvar_normal'"
-            ]
-        ],
-        "timeout": 60.0,
-        "type": "peakmemory",
-        "unit": "bytes",
-        "version": "c75738772ab05552dcec0b653b26eb4397de0c750d14eea3f6e0b1afbf0a8a97"
-    },
-    "distribution.Sampling.time_sample": {
-        "code": "class Sampling:\n    def time_sample(self, dist):\n        \"\"\"Times sampling from this distribution.\"\"\"\n        self.randvar.sample(self.n_samples)\n\n    def setup(self, dist):\n        np.random.seed(42)\n        self.n_samples = 1000\n        self.randvar = get_randvar(distribution_name=dist)",
-        "min_run_count": 2,
-        "name": "distribution.Sampling.time_sample",
-        "number": 0,
-        "param_names": [
-            "dist"
-        ],
-        "params": [
-            [
-                "'univar_normal'",
-                "'multivar_normal'",
-                "'matrixvar_normal'",
-                "'symmatrixvar_normal'"
-            ]
-        ],
-        "processes": 2,
-        "repeat": 0,
-        "sample_time": 0.01,
-        "timeout": 60.0,
-        "type": "time",
-        "unit": "seconds",
-        "version": "f20f857be1d0c0f4340e8064e5285dad677a08c3d33aa21133d190a573c4fad8",
-        "warmup_time": -1
-    },
     "ivpsolve.IVPSolve.peakmem_solve": {
         "code": "class IVPSolve:\n    def peakmem_solve(self, method, precond, prior):\n        precond_step = self.stepsize if precond == \"with\" else 1.0\n        probsolve_ivp(\n            self.ivp,\n            method=method,\n            which_prior=prior,\n            step=self.stepsize,\n            precond_step=precond_step,\n        )\n\n    def setup(self, method, precond, prior):\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-2",
         "name": "ivpsolve.IVPSolve.peakmem_solve",
@@ -216,6 +140,85 @@
         "type": "time",
         "unit": "seconds",
         "version": "e140297042a5ac6c236f00da17a4cb3660a63433fcab0c2f619ef7a57ddfb3d8",
+        "warmup_time": -1
+    },
+    "random_variables.Functions.time_distr_functions": {
+        "code": "class Functions:\n    def time_distr_functions(self, randvar, property):\n        \"\"\"Times evaluation of the pdf, logpdf, cdf and logcdf.\"\"\"\n        try:\n            if property == \"pdf\":\n                self.randvar.pdf(x=self.eval_point)\n            elif property == \"logpdf\":\n                self.randvar.logpdf(x=self.eval_point)\n            elif property == \"cdf\":\n                self.randvar.cdf(x=self.quantile)\n            elif property == \"logcdf\":\n                self.randvar.logcdf(x=self.quantile)\n        except NotImplementedError:\n            pass\n\n    def setup(self, randvar, property):\n        self.randvar = get_randvar(rv_name=randvar)\n        self.eval_point = np.random.uniform(size=self.randvar.shape)\n        self.quantile = np.random.uniform(size=self.randvar.shape)",
+        "min_run_count": 2,
+        "name": "random_variables.Functions.time_distr_functions",
+        "number": 0,
+        "param_names": [
+            "randvar",
+            "property"
+        ],
+        "params": [
+            [
+                "'univar_normal'",
+                "'multivar_normal'",
+                "'matrixvar_normal'",
+                "'symmatrixvar_normal'",
+                "'operatorvar_normal'"
+            ],
+            [
+                "'pdf'",
+                "'logpdf'",
+                "'cdf'",
+                "'logcdf'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "4c5c4637c27ba703b2ec80ea75fba0cf3128f18f28f46854ed9aa0e21b802ebd",
+        "warmup_time": -1
+    },
+    "random_variables.Sampling.peakmem_sample": {
+        "code": "class Sampling:\n    def peakmem_sample(self, randvar):\n        \"\"\"Peak memory of sampling process.\"\"\"\n        self.randvar.sample(self.n_samples)\n\n    def setup(self, randvar):\n        np.random.seed(42)\n        self.n_samples = 1000\n        self.randvar = get_randvar(rv_name=randvar)",
+        "name": "random_variables.Sampling.peakmem_sample",
+        "param_names": [
+            "randvar"
+        ],
+        "params": [
+            [
+                "'univar_normal'",
+                "'multivar_normal'",
+                "'matrixvar_normal'",
+                "'symmatrixvar_normal'",
+                "'operatorvar_normal'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "8c7bfdb1e4a4015a16a3a6d46e1f74176aef0e16995f157e92bdbf632c6326d1"
+    },
+    "random_variables.Sampling.time_sample": {
+        "code": "class Sampling:\n    def time_sample(self, randvar):\n        \"\"\"Times sampling from this distribution.\"\"\"\n        self.randvar.sample(self.n_samples)\n\n    def setup(self, randvar):\n        np.random.seed(42)\n        self.n_samples = 1000\n        self.randvar = get_randvar(rv_name=randvar)",
+        "min_run_count": 2,
+        "name": "random_variables.Sampling.time_sample",
+        "number": 0,
+        "param_names": [
+            "randvar"
+        ],
+        "params": [
+            [
+                "'univar_normal'",
+                "'multivar_normal'",
+                "'matrixvar_normal'",
+                "'symmatrixvar_normal'",
+                "'operatorvar_normal'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "27dbfe7ba451737d64221100d07633db8df65f4992b6dc037ff7e395fbbf4697",
         "warmup_time": -1
     },
     "version": 2
