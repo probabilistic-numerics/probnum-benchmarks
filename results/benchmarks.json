@@ -62,7 +62,7 @@
         "warmup_time": -1
     },
     "linearsolvers.LinSolve.mem_solve": {
-        "code": "class LinSolve:\n    def mem_solve(self, system):\n        \"\"\"Time solving a linear system\"\"\"\n        # pylint: disable=unused-argument\n        problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # pylint: disable=attribute-defined-outside-init,invalid-name\n    \n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            (\n                self.A,\n                self.b,\n            ) = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = SPD_MATRIX_5x5\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
+        "code": "class LinSolve:\n    def mem_solve(self, system):\n        \"\"\"Time solving a linear system.\"\"\"\n        # pylint: disable=unused-argument\n        problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # pylint: disable=attribute-defined-outside-init,invalid-name\n    \n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            (\n                self.A,\n                self.b,\n            ) = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = SPD_MATRIX_5x5\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
         "name": "linearsolvers.LinSolve.mem_solve",
         "param_names": [
             "system"
@@ -76,10 +76,10 @@
         "timeout": 60.0,
         "type": "memory",
         "unit": "bytes",
-        "version": "1b3ed0f1865671c13bb39d7396f42faebb5e6a698ba5d9cc81598153ef996ad8"
+        "version": "becdada8b3717f565511fbccb86ceaac2e6a58291377b20018c88269cdbe5885"
     },
     "linearsolvers.LinSolve.peakmem_solve": {
-        "code": "class LinSolve:\n    def peakmem_solve(self, system):\n        \"\"\"Time solving a linear system\"\"\"\n        # pylint: disable=unused-argument\n        problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # pylint: disable=attribute-defined-outside-init,invalid-name\n    \n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            (\n                self.A,\n                self.b,\n            ) = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = SPD_MATRIX_5x5\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
+        "code": "class LinSolve:\n    def peakmem_solve(self, system):\n        \"\"\"Time solving a linear system.\"\"\"\n        # pylint: disable=unused-argument\n        problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # pylint: disable=attribute-defined-outside-init,invalid-name\n    \n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            (\n                self.A,\n                self.b,\n            ) = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = SPD_MATRIX_5x5\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
         "name": "linearsolvers.LinSolve.peakmem_solve",
         "param_names": [
             "system"
@@ -93,10 +93,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "83917d02ca53115d3bf89d670593c2014f9a7af928e241d5292faf3ac668e740"
+        "version": "ed10b70bcc839fcfd1520c3f457ec95f984fb64fb994c99357ac98dfb0c52ebc"
     },
     "linearsolvers.LinSolve.time_solve": {
-        "code": "class LinSolve:\n    def time_solve(self, system):\n        \"\"\"Time solving a linear system\"\"\"\n        # pylint: disable=unused-argument\n        problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # pylint: disable=attribute-defined-outside-init,invalid-name\n    \n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            (\n                self.A,\n                self.b,\n            ) = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = SPD_MATRIX_5x5\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
+        "code": "class LinSolve:\n    def time_solve(self, system):\n        \"\"\"Time solving a linear system.\"\"\"\n        # pylint: disable=unused-argument\n        problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # pylint: disable=attribute-defined-outside-init,invalid-name\n    \n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            (\n                self.A,\n                self.b,\n            ) = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = SPD_MATRIX_5x5\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
         "min_run_count": 2,
         "name": "linearsolvers.LinSolve.time_solve",
         "number": 0,
@@ -115,11 +115,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "bce754abb8af259de6aad0ce0ed39fce857aae0c4bcf5e927fbd10153ce1b7ac",
+        "version": "d0ce131654f8bcfc9222617222f13a7f33160a1a258e5676287104b4f8dac8b1",
         "warmup_time": -1
     },
     "linearsolvers.PosteriorDist.time_sample": {
-        "code": "class PosteriorDist:\n    def time_sample(self, output):\n        \"\"\"Time sampling from the posterior distribution\"\"\"\n        if output == \"solution\":\n            self.xhat.sample(self.n_samples)\n        elif output == \"matrix\":\n            self.Ahat.sample(self.n_samples)\n        elif output == \"matrix_inverse\":\n            self.Ainvhat.sample(self.n_samples)\n\n    def setup(self, output):\n        # pylint: disable=attribute-defined-outside-init\n        # pylint: disable=unused-argument, invalid-name\n    \n        # Sparse system\n        self.A, self.b = load_poisson_linear_system()\n    \n        # Solve linear system\n        self.xhat, self.Ahat, self.Ainvhat, _ = problinsolve(A=self.A, b=self.b)\n    \n        # Benchmark parameters\n        self.n_samples = 10",
+        "code": "class PosteriorDist:\n    def time_sample(self, output):\n        \"\"\"Time sampling from the posterior distribution.\"\"\"\n        if output == \"solution\":\n            self.xhat.sample(self.n_samples)\n        elif output == \"matrix\":\n            self.Ahat.sample(self.n_samples)\n        elif output == \"matrix_inverse\":\n            self.Ainvhat.sample(self.n_samples)\n\n    def setup(self, output):\n        # pylint: disable=attribute-defined-outside-init\n        # pylint: disable=unused-argument, invalid-name\n    \n        # Sparse system\n        self.A, self.b = load_poisson_linear_system()\n    \n        # Solve linear system\n        self.xhat, self.Ahat, self.Ainvhat, _ = problinsolve(A=self.A, b=self.b)\n    \n        # Benchmark parameters\n        self.n_samples = 10",
         "min_run_count": 2,
         "name": "linearsolvers.PosteriorDist.time_sample",
         "number": 0,
@@ -139,7 +139,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "026c363fe5dabcdcc1c56d2ec686a989d42410a7518b5125e65b7541bfb06a15",
+        "version": "7d57eec1c4c5c33913b7ac58cbcce0140d4f4f58ce13ac5f8d6801d4dc895c27",
         "warmup_time": -1
     },
     "random_variables.Functions.time_distr_functions": {
