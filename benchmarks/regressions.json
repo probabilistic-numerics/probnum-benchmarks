@@ -1,1 +1,1 @@
-{"regressions": [["linearsolvers.PosteriorDist.time_sample('matrix_inverse')", "graphs/branch-master/machine-unitue-mlcloud-probnum/python-3.8/linearsolvers.PosteriorDist.time_sample.json", {}, 2, 0.06267943233251572, 0.02910857554525137, [[null, 911, 0.02910857554525137, 0.06267943233251572]]]]}
+{"regressions": []}
