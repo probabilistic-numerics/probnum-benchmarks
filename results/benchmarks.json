@@ -1,55 +1,43 @@
 {
     "ivpsolvers.IVPSolve.peakmem_solve": {
-        "code": "class IVPSolve:\n    def peakmem_solve(self, method, precond, prior):\n        precond_step = self.stepsize if precond == \"with\" else 1.0\n        probsolve_ivp(\n            self.ivp,\n            method=method,\n            which_prior=prior,\n            step=self.stepsize,\n            precond_step=precond_step,\n        )\n\n    def setup(self, method, precond, prior):\n        # pylint: disable=invalid-name\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-2",
+        "code": "class IVPSolve:\n    def peakmem_solve(self, method, algo_order):\n        f = self.ivp.rhs\n        df = self.ivp.jacobian\n        t0, tmax = self.ivp.timespan\n        y0 = self.ivp.initrv.mean\n        probsolve_ivp(\n            f,\n            t0,\n            tmax,\n            y0,\n            df=df,\n            method=method,\n            algo_order=algo_order,\n            step=self.stepsize,\n            adaptive=False,\n        )\n\n    def setup(self, method, prior):\n        # pylint: disable=invalid-name\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-1",
         "name": "ivpsolvers.IVPSolve.peakmem_solve",
         "param_names": [
             "method",
-            "precond",
-            "prior"
+            "algo_order"
         ],
         "params": [
             [
-                "'eks0'",
-                "'ekf0'"
+                "'ek0'",
+                "'ek1'"
             ],
             [
-                "'with'",
-                "'without'"
-            ],
-            [
-                "'ibm4'",
-                "'ioup4'",
-                "'matern92'"
+                "2",
+                "3"
             ]
         ],
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "aa83f1ed946d1379af131e830cc08e7443079e555ada6642d9f6358d522ecc12"
+        "version": "d0d0a4a57f87eb92a740f8b5221c682786431442289947a44c33b7ef4e269af7"
     },
     "ivpsolvers.IVPSolve.time_solve": {
-        "code": "class IVPSolve:\n    def time_solve(self, method, precond, prior):\n        precond_step = self.stepsize if precond == \"with\" else 1.0\n        probsolve_ivp(\n            self.ivp,\n            method=method,\n            which_prior=prior,\n            step=self.stepsize,\n            precond_step=precond_step,\n        )\n\n    def setup(self, method, precond, prior):\n        # pylint: disable=invalid-name\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-2",
+        "code": "class IVPSolve:\n    def time_solve(self, method, algo_order):\n        f = self.ivp.rhs\n        df = self.ivp.jacobian\n        t0, tmax = self.ivp.timespan\n        y0 = self.ivp.initrv.mean\n        probsolve_ivp(\n            f,\n            t0,\n            tmax,\n            y0,\n            df=df,\n            method=method,\n            algo_order=algo_order,\n            step=self.stepsize,\n            adaptive=False,\n        )\n\n    def setup(self, method, prior):\n        # pylint: disable=invalid-name\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-1",
         "min_run_count": 2,
         "name": "ivpsolvers.IVPSolve.time_solve",
         "number": 0,
         "param_names": [
             "method",
-            "precond",
-            "prior"
+            "algo_order"
         ],
         "params": [
             [
-                "'eks0'",
-                "'ekf0'"
+                "'ek0'",
+                "'ek1'"
             ],
             [
-                "'with'",
-                "'without'"
-            ],
-            [
-                "'ibm4'",
-                "'ioup4'",
-                "'matern92'"
+                "2",
+                "3"
             ]
         ],
         "processes": 2,
@@ -58,7 +46,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "3b5cc12036e423afc0e5e7294286264a20fbd2fbe7bfb8711d080cd88ef67543",
+        "version": "645cf3c5e52360b0c5e1193242933b27a179ba885ef5dc13458038eac625b4ca",
         "warmup_time": -1
     },
     "kernels.Kernels.peakmem_kernel_matrix": {
