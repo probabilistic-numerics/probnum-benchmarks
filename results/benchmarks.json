@@ -1,6 +1,246 @@
 {
+    "filtsmooth.DenseGridOperations.peakmem_dense_filter": {
+        "code": "class DenseGridOperations:\n    def peakmem_dense_filter(self, linearization_implementation, num_samples):\n        self.filtering_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "name": "filtsmooth.DenseGridOperations.peakmem_dense_filter",
+        "param_names": [
+            "linearization_implementation",
+            "num_samples"
+        ],
+        "params": [
+            [
+                "('ekf', 'classic')",
+                "('ekf', 'sqrt')",
+                "('ukf', 'classic')"
+            ],
+            [
+                "1",
+                "10"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "c0eccd7d0a84bdb9b1811f3b61122d3f55e2476d14cdb3daf0ebaa4520ee982b"
+    },
+    "filtsmooth.DenseGridOperations.peakmem_dense_smoother": {
+        "code": "class DenseGridOperations:\n    def peakmem_dense_smoother(self, linearization_implementation, num_samples):\n        self.smoothing_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "name": "filtsmooth.DenseGridOperations.peakmem_dense_smoother",
+        "param_names": [
+            "linearization_implementation",
+            "num_samples"
+        ],
+        "params": [
+            [
+                "('ekf', 'classic')",
+                "('ekf', 'sqrt')",
+                "('ukf', 'classic')"
+            ],
+            [
+                "1",
+                "10"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "4e10ee6a0d892df4642d5f7a863a18c329735251af012e5473b98255ee8db756"
+    },
+    "filtsmooth.DenseGridOperations.peakmem_sample": {
+        "code": "class DenseGridOperations:\n    def peakmem_sample(self, linearization_implementation, num_samples):\n        self.smoothing_posterior.sample(t=self.dense_locations, size=num_samples)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "name": "filtsmooth.DenseGridOperations.peakmem_sample",
+        "param_names": [
+            "linearization_implementation",
+            "num_samples"
+        ],
+        "params": [
+            [
+                "('ekf', 'classic')",
+                "('ekf', 'sqrt')",
+                "('ukf', 'classic')"
+            ],
+            [
+                "1",
+                "10"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "bca65b02bbb1a8069264aa2ceeb8a381401775766cd7d56288f1612ab2acaeed"
+    },
+    "filtsmooth.DenseGridOperations.time_dense_filter": {
+        "code": "class DenseGridOperations:\n    def time_dense_filter(self, linearization_implementation, num_samples):\n        self.filtering_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "min_run_count": 2,
+        "name": "filtsmooth.DenseGridOperations.time_dense_filter",
+        "number": 0,
+        "param_names": [
+            "linearization_implementation",
+            "num_samples"
+        ],
+        "params": [
+            [
+                "('ekf', 'classic')",
+                "('ekf', 'sqrt')",
+                "('ukf', 'classic')"
+            ],
+            [
+                "1",
+                "10"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "e79d6fbd128474bc1ec2de2fcd96a2a84c647789b6b545a27e06edc13860ff33",
+        "warmup_time": -1
+    },
+    "filtsmooth.DenseGridOperations.time_dense_smoother": {
+        "code": "class DenseGridOperations:\n    def time_dense_smoother(self, linearization_implementation, num_samples):\n        self.smoothing_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "min_run_count": 2,
+        "name": "filtsmooth.DenseGridOperations.time_dense_smoother",
+        "number": 0,
+        "param_names": [
+            "linearization_implementation",
+            "num_samples"
+        ],
+        "params": [
+            [
+                "('ekf', 'classic')",
+                "('ekf', 'sqrt')",
+                "('ukf', 'classic')"
+            ],
+            [
+                "1",
+                "10"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "c87631656f2bc60fb23ae7ad19a427642123dd53f3be7e43db31fcd93eddafab",
+        "warmup_time": -1
+    },
+    "filtsmooth.DenseGridOperations.time_sample": {
+        "code": "class DenseGridOperations:\n    def time_sample(self, linearization_implementation, num_samples):\n        self.smoothing_posterior.sample(t=self.dense_locations, size=num_samples)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "min_run_count": 2,
+        "name": "filtsmooth.DenseGridOperations.time_sample",
+        "number": 0,
+        "param_names": [
+            "linearization_implementation",
+            "num_samples"
+        ],
+        "params": [
+            [
+                "('ekf', 'classic')",
+                "('ekf', 'sqrt')",
+                "('ukf', 'classic')"
+            ],
+            [
+                "1",
+                "10"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "8f22c2856d7aa913248924d2fd9a477858c80bc2c73c6618b5c677d177deb61b",
+        "warmup_time": -1
+    },
+    "filtsmooth.Filtering.peakmem_filter": {
+        "code": "class Filtering:\n    def peakmem_filter(self, linearization_implementation):\n        self.kalman_filter.filter(self.regression_problem)\n\n    def setup(self, linearization_implementation):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )",
+        "name": "filtsmooth.Filtering.peakmem_filter",
+        "param_names": [
+            "linearization_implementation"
+        ],
+        "params": [
+            [
+                "('ekf', 'classic')",
+                "('ekf', 'sqrt')",
+                "('ukf', 'classic')"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "d5b85676d5ad4ed46324219a776d7f69f41d47745eb4d0f1476688722c9e03db"
+    },
+    "filtsmooth.Filtering.time_filter": {
+        "code": "class Filtering:\n    def time_filter(self, linearization_implementation):\n        self.kalman_filter.filter(self.regression_problem)\n\n    def setup(self, linearization_implementation):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )",
+        "min_run_count": 2,
+        "name": "filtsmooth.Filtering.time_filter",
+        "number": 0,
+        "param_names": [
+            "linearization_implementation"
+        ],
+        "params": [
+            [
+                "('ekf', 'classic')",
+                "('ekf', 'sqrt')",
+                "('ukf', 'classic')"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "00a8b95ae232a449d0eaad495c87630e6d320f86ab649b708510c3fc2458b81e",
+        "warmup_time": -1
+    },
+    "filtsmooth.Smoothing.peakmem_smooth": {
+        "code": "class Smoothing:\n    def peakmem_smooth(self, linearization_implementation):\n        self.kalman_filter.smooth(filter_posterior=self.filtering_posterior)\n\n    def setup(self, linearization_implementation):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)",
+        "name": "filtsmooth.Smoothing.peakmem_smooth",
+        "param_names": [
+            "linearization_implementation"
+        ],
+        "params": [
+            [
+                "('ekf', 'classic')",
+                "('ekf', 'sqrt')",
+                "('ukf', 'classic')"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "b673daf4dc18bd77496a2787ba02cd6d6cd9faf7abe02fa8144d1c8d5480cb9d"
+    },
+    "filtsmooth.Smoothing.time_smooth": {
+        "code": "class Smoothing:\n    def time_smooth(self, linearization_implementation):\n        self.kalman_filter.smooth(filter_posterior=self.filtering_posterior)\n\n    def setup(self, linearization_implementation):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)",
+        "min_run_count": 2,
+        "name": "filtsmooth.Smoothing.time_smooth",
+        "number": 0,
+        "param_names": [
+            "linearization_implementation"
+        ],
+        "params": [
+            [
+                "('ekf', 'classic')",
+                "('ekf', 'sqrt')",
+                "('ukf', 'classic')"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "354eb0f9e6db47b59ccddda91a1e20c46d10e9e00d30de4790c3ceffbae05729",
+        "warmup_time": -1
+    },
     "ivpsolvers.IVPSolve.peakmem_solve": {
-        "code": "class IVPSolve:\n    def peakmem_solve(self, method, algo_order):\n        f = self.ivp.rhs\n        df = self.ivp.jacobian\n        t0, tmax = self.ivp.timespan\n        y0 = self.ivp.initrv.mean\n        probsolve_ivp(\n            f,\n            t0,\n            tmax,\n            y0,\n            df=df,\n            method=method,\n            algo_order=algo_order,\n            step=self.stepsize,\n            adaptive=False,\n        )\n\n    def setup(self, method, prior):\n        # pylint: disable=invalid-name\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-1",
+        "code": "class IVPSolve:\n    def peakmem_solve(self, method, algo_order):\n        f = self.ivp.rhs\n        df = self.ivp.jacobian\n        t0, tmax = self.ivp.timespan\n        y0 = self.ivp.initrv.mean\n        probsolve_ivp(\n            f,\n            t0,\n            tmax,\n            y0,\n            df=df,\n            method=method,\n            dense_output=True,\n            algo_order=algo_order,\n            step=self.stepsize,\n            adaptive=False,\n        )\n\n    def setup(self, method, prior):\n        # pylint: disable=invalid-name\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-1",
         "name": "ivpsolvers.IVPSolve.peakmem_solve",
         "param_names": [
             "method",
@@ -19,10 +259,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "d0d0a4a57f87eb92a740f8b5221c682786431442289947a44c33b7ef4e269af7"
+        "version": "4355f33a1226e75a219f8222b8472582c26e9fdc3d9d2488e7343b952fa3000e"
     },
     "ivpsolvers.IVPSolve.time_solve": {
-        "code": "class IVPSolve:\n    def time_solve(self, method, algo_order):\n        f = self.ivp.rhs\n        df = self.ivp.jacobian\n        t0, tmax = self.ivp.timespan\n        y0 = self.ivp.initrv.mean\n        probsolve_ivp(\n            f,\n            t0,\n            tmax,\n            y0,\n            df=df,\n            method=method,\n            algo_order=algo_order,\n            step=self.stepsize,\n            adaptive=False,\n        )\n\n    def setup(self, method, prior):\n        # pylint: disable=invalid-name\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-1",
+        "code": "class IVPSolve:\n    def time_solve(self, method, algo_order):\n        f = self.ivp.rhs\n        df = self.ivp.jacobian\n        t0, tmax = self.ivp.timespan\n        y0 = self.ivp.initrv.mean\n        probsolve_ivp(\n            f,\n            t0,\n            tmax,\n            y0,\n            df=df,\n            method=method,\n            dense_output=True,\n            algo_order=algo_order,\n            step=self.stepsize,\n            adaptive=False,\n        )\n\n    def setup(self, method, prior):\n        # pylint: disable=invalid-name\n        self.ivp = load_lotkavolterra()\n        self.stepsize = 1e-1",
         "min_run_count": 2,
         "name": "ivpsolvers.IVPSolve.time_solve",
         "number": 0,
@@ -46,7 +286,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "645cf3c5e52360b0c5e1193242933b27a179ba885ef5dc13458038eac625b4ca",
+        "version": "6a79b92752b388b6b1c46d5394b9d6f4baf0e5455b6d5de65510fdb0e923bf9d",
         "warmup_time": -1
     },
     "kernels.Kernels.peakmem_kernel_matrix": {
