@@ -1,6 +1,6 @@
 {
     "filtsmooth.DenseGridOperations.peakmem_dense_filter": {
-        "code": "class DenseGridOperations:\n    def peakmem_dense_filter(self, linearization_implementation, num_samples):\n        self.filtering_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "code": "class DenseGridOperations:\n    def peakmem_dense_filter(self, linearization_implementation, num_samples):\n        self.filtering_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        measvar = 0.1024\n        initrv = randvars.Normal(np.ones(2), measvar * np.eye(2))\n        regression_problem, statespace_components = filtsmooth_zoo.pendulum(\n            measurement_variance=measvar,\n            timespan=(0.0, 4.0),\n            step=0.0075,\n            initrv=initrv,\n        )\n    \n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=regression_problem.locations[0],\n                    high=1.2 * regression_problem.locations[-1],\n                    size=int(1.2 * len(regression_problem.locations)),\n                )\n            )\n        )\n    \n        linearized_dynmod = _lin_method(statespace_components[\"dynamics_model\"])\n        linearized_measmod = _lin_method(statespace_components[\"measurement_model\"])\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=statespace_components[\"initrv\"],\n        )\n        self.filtering_posterior = self.kalman_filter.filter(regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
         "name": "filtsmooth.DenseGridOperations.peakmem_dense_filter",
         "param_names": [
             "linearization_implementation",
@@ -20,10 +20,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "c0eccd7d0a84bdb9b1811f3b61122d3f55e2476d14cdb3daf0ebaa4520ee982b"
+        "version": "fc8fae51a74700f7149880cfca6d251e76723bd009fd15f5bf19fad4f537220e"
     },
     "filtsmooth.DenseGridOperations.peakmem_dense_smoother": {
-        "code": "class DenseGridOperations:\n    def peakmem_dense_smoother(self, linearization_implementation, num_samples):\n        self.smoothing_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "code": "class DenseGridOperations:\n    def peakmem_dense_smoother(self, linearization_implementation, num_samples):\n        self.smoothing_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        measvar = 0.1024\n        initrv = randvars.Normal(np.ones(2), measvar * np.eye(2))\n        regression_problem, statespace_components = filtsmooth_zoo.pendulum(\n            measurement_variance=measvar,\n            timespan=(0.0, 4.0),\n            step=0.0075,\n            initrv=initrv,\n        )\n    \n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=regression_problem.locations[0],\n                    high=1.2 * regression_problem.locations[-1],\n                    size=int(1.2 * len(regression_problem.locations)),\n                )\n            )\n        )\n    \n        linearized_dynmod = _lin_method(statespace_components[\"dynamics_model\"])\n        linearized_measmod = _lin_method(statespace_components[\"measurement_model\"])\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=statespace_components[\"initrv\"],\n        )\n        self.filtering_posterior = self.kalman_filter.filter(regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
         "name": "filtsmooth.DenseGridOperations.peakmem_dense_smoother",
         "param_names": [
             "linearization_implementation",
@@ -43,10 +43,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "4e10ee6a0d892df4642d5f7a863a18c329735251af012e5473b98255ee8db756"
+        "version": "ef65fbef8fa91fa4efa6dda3a3dfdaca52c34d62a725a4d5ceb97423cc45dccb"
     },
     "filtsmooth.DenseGridOperations.peakmem_sample": {
-        "code": "class DenseGridOperations:\n    def peakmem_sample(self, linearization_implementation, num_samples):\n        self.smoothing_posterior.sample(t=self.dense_locations, size=num_samples)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "code": "class DenseGridOperations:\n    def peakmem_sample(self, linearization_implementation, num_samples):\n        self.smoothing_posterior.sample(t=self.dense_locations, size=num_samples)\n\n    def setup(self, linearization_implementation, num_samples):\n        measvar = 0.1024\n        initrv = randvars.Normal(np.ones(2), measvar * np.eye(2))\n        regression_problem, statespace_components = filtsmooth_zoo.pendulum(\n            measurement_variance=measvar,\n            timespan=(0.0, 4.0),\n            step=0.0075,\n            initrv=initrv,\n        )\n    \n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=regression_problem.locations[0],\n                    high=1.2 * regression_problem.locations[-1],\n                    size=int(1.2 * len(regression_problem.locations)),\n                )\n            )\n        )\n    \n        linearized_dynmod = _lin_method(statespace_components[\"dynamics_model\"])\n        linearized_measmod = _lin_method(statespace_components[\"measurement_model\"])\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=statespace_components[\"initrv\"],\n        )\n        self.filtering_posterior = self.kalman_filter.filter(regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
         "name": "filtsmooth.DenseGridOperations.peakmem_sample",
         "param_names": [
             "linearization_implementation",
@@ -66,10 +66,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "bca65b02bbb1a8069264aa2ceeb8a381401775766cd7d56288f1612ab2acaeed"
+        "version": "ab3ae70da74f8753750d05cd533672c57b82fbc6a514e2b92f12cf1e5b3d506f"
     },
     "filtsmooth.DenseGridOperations.time_dense_filter": {
-        "code": "class DenseGridOperations:\n    def time_dense_filter(self, linearization_implementation, num_samples):\n        self.filtering_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "code": "class DenseGridOperations:\n    def time_dense_filter(self, linearization_implementation, num_samples):\n        self.filtering_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        measvar = 0.1024\n        initrv = randvars.Normal(np.ones(2), measvar * np.eye(2))\n        regression_problem, statespace_components = filtsmooth_zoo.pendulum(\n            measurement_variance=measvar,\n            timespan=(0.0, 4.0),\n            step=0.0075,\n            initrv=initrv,\n        )\n    \n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=regression_problem.locations[0],\n                    high=1.2 * regression_problem.locations[-1],\n                    size=int(1.2 * len(regression_problem.locations)),\n                )\n            )\n        )\n    \n        linearized_dynmod = _lin_method(statespace_components[\"dynamics_model\"])\n        linearized_measmod = _lin_method(statespace_components[\"measurement_model\"])\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=statespace_components[\"initrv\"],\n        )\n        self.filtering_posterior = self.kalman_filter.filter(regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
         "min_run_count": 2,
         "name": "filtsmooth.DenseGridOperations.time_dense_filter",
         "number": 0,
@@ -94,11 +94,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "e79d6fbd128474bc1ec2de2fcd96a2a84c647789b6b545a27e06edc13860ff33",
+        "version": "4a131e7984348d8d8d43686e842d182ff1f571f4e5edf13a127d1f59bf53a0c2",
         "warmup_time": -1
     },
     "filtsmooth.DenseGridOperations.time_dense_smoother": {
-        "code": "class DenseGridOperations:\n    def time_dense_smoother(self, linearization_implementation, num_samples):\n        self.smoothing_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "code": "class DenseGridOperations:\n    def time_dense_smoother(self, linearization_implementation, num_samples):\n        self.smoothing_posterior(self.dense_locations)\n\n    def setup(self, linearization_implementation, num_samples):\n        measvar = 0.1024\n        initrv = randvars.Normal(np.ones(2), measvar * np.eye(2))\n        regression_problem, statespace_components = filtsmooth_zoo.pendulum(\n            measurement_variance=measvar,\n            timespan=(0.0, 4.0),\n            step=0.0075,\n            initrv=initrv,\n        )\n    \n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=regression_problem.locations[0],\n                    high=1.2 * regression_problem.locations[-1],\n                    size=int(1.2 * len(regression_problem.locations)),\n                )\n            )\n        )\n    \n        linearized_dynmod = _lin_method(statespace_components[\"dynamics_model\"])\n        linearized_measmod = _lin_method(statespace_components[\"measurement_model\"])\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=statespace_components[\"initrv\"],\n        )\n        self.filtering_posterior = self.kalman_filter.filter(regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
         "min_run_count": 2,
         "name": "filtsmooth.DenseGridOperations.time_dense_smoother",
         "number": 0,
@@ -123,11 +123,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "c87631656f2bc60fb23ae7ad19a427642123dd53f3be7e43db31fcd93eddafab",
+        "version": "e752b65fe2cd729be87a742daff36bb04725d626a652d275492c43b7af79627f",
         "warmup_time": -1
     },
     "filtsmooth.DenseGridOperations.time_sample": {
-        "code": "class DenseGridOperations:\n    def time_sample(self, linearization_implementation, num_samples):\n        self.smoothing_posterior.sample(t=self.dense_locations, size=num_samples)\n\n    def setup(self, linearization_implementation, num_samples):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=0.0,\n                    high=1.2 * info[\"tmax\"],\n                    size=int(1.2 * len(self.locations)),\n                )\n            )\n        )\n    \n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
+        "code": "class DenseGridOperations:\n    def time_sample(self, linearization_implementation, num_samples):\n        self.smoothing_posterior.sample(t=self.dense_locations, size=num_samples)\n\n    def setup(self, linearization_implementation, num_samples):\n        measvar = 0.1024\n        initrv = randvars.Normal(np.ones(2), measvar * np.eye(2))\n        regression_problem, statespace_components = filtsmooth_zoo.pendulum(\n            measurement_variance=measvar,\n            timespan=(0.0, 4.0),\n            step=0.0075,\n            initrv=initrv,\n        )\n    \n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.dense_locations = np.sort(\n            np.unique(\n                np.random.uniform(\n                    low=regression_problem.locations[0],\n                    high=1.2 * regression_problem.locations[-1],\n                    size=int(1.2 * len(regression_problem.locations)),\n                )\n            )\n        )\n    \n        linearized_dynmod = _lin_method(statespace_components[\"dynamics_model\"])\n        linearized_measmod = _lin_method(statespace_components[\"measurement_model\"])\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=statespace_components[\"initrv\"],\n        )\n        self.filtering_posterior = self.kalman_filter.filter(regression_problem)\n        self.smoothing_posterior = self.kalman_filter.smooth(\n            filter_posterior=self.filtering_posterior\n        )",
         "min_run_count": 2,
         "name": "filtsmooth.DenseGridOperations.time_sample",
         "number": 0,
@@ -152,11 +152,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "8f22c2856d7aa913248924d2fd9a477858c80bc2c73c6618b5c677d177deb61b",
+        "version": "72fb573627a4d86f9f285247f73863bd68f9b18142a3c3e138cdb3f754d9064b",
         "warmup_time": -1
     },
     "filtsmooth.Filtering.peakmem_filter": {
-        "code": "class Filtering:\n    def peakmem_filter(self, linearization_implementation):\n        self.kalman_filter.filter(self.regression_problem)\n\n    def setup(self, linearization_implementation):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )",
+        "code": "class Filtering:\n    def peakmem_filter(self, linearization_implementation):\n        self.kalman_filter.filter(self.regression_problem)\n\n    def setup(self, linearization_implementation):\n        measvar = 0.1024\n        initrv = randvars.Normal(np.ones(2), measvar * np.eye(2))\n        regression_problem, statespace_components = filtsmooth_zoo.pendulum(\n            measurement_variance=measvar,\n            timespan=(0.0, 4.0),\n            step=0.0075,\n            initrv=initrv,\n        )\n    \n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        linearized_dynmod = _lin_method(statespace_components[\"dynamics_model\"])\n        linearized_measmod = _lin_method(statespace_components[\"measurement_model\"])\n    \n        self.regression_problem = regression_problem\n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=statespace_components[\"initrv\"],\n        )",
         "name": "filtsmooth.Filtering.peakmem_filter",
         "param_names": [
             "linearization_implementation"
@@ -171,10 +171,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "d5b85676d5ad4ed46324219a776d7f69f41d47745eb4d0f1476688722c9e03db"
+        "version": "820813efa3a6a3a5b94de1d87f9a372a730124244bd228a6bd7c725b22182f56"
     },
     "filtsmooth.Filtering.time_filter": {
-        "code": "class Filtering:\n    def time_filter(self, linearization_implementation):\n        self.kalman_filter.filter(self.regression_problem)\n\n    def setup(self, linearization_implementation):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )",
+        "code": "class Filtering:\n    def time_filter(self, linearization_implementation):\n        self.kalman_filter.filter(self.regression_problem)\n\n    def setup(self, linearization_implementation):\n        measvar = 0.1024\n        initrv = randvars.Normal(np.ones(2), measvar * np.eye(2))\n        regression_problem, statespace_components = filtsmooth_zoo.pendulum(\n            measurement_variance=measvar,\n            timespan=(0.0, 4.0),\n            step=0.0075,\n            initrv=initrv,\n        )\n    \n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        linearized_dynmod = _lin_method(statespace_components[\"dynamics_model\"])\n        linearized_measmod = _lin_method(statespace_components[\"measurement_model\"])\n    \n        self.regression_problem = regression_problem\n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=statespace_components[\"initrv\"],\n        )",
         "min_run_count": 2,
         "name": "filtsmooth.Filtering.time_filter",
         "number": 0,
@@ -194,11 +194,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "00a8b95ae232a449d0eaad495c87630e6d320f86ab649b708510c3fc2458b81e",
+        "version": "e41aeeeaa079c6c2dec8f744464905787107b2f8e6134edd7fe0f6c021e25db4",
         "warmup_time": -1
     },
     "filtsmooth.Smoothing.peakmem_smooth": {
-        "code": "class Smoothing:\n    def peakmem_smooth(self, linearization_implementation):\n        self.kalman_filter.smooth(filter_posterior=self.filtering_posterior)\n\n    def setup(self, linearization_implementation):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)",
+        "code": "class Smoothing:\n    def peakmem_smooth(self, linearization_implementation):\n        self.kalman_filter.smooth(filter_posterior=self.filtering_posterior)\n\n    def setup(self, linearization_implementation):\n        measvar = 0.1024\n        initrv = randvars.Normal(np.ones(2), measvar * np.eye(2))\n        regression_problem, statespace_components = filtsmooth_zoo.pendulum(\n            measurement_variance=measvar,\n            timespan=(0.0, 4.0),\n            step=0.0075,\n            initrv=initrv,\n        )\n    \n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        linearized_dynmod = _lin_method(statespace_components[\"dynamics_model\"])\n        linearized_measmod = _lin_method(statespace_components[\"measurement_model\"])\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=statespace_components[\"initrv\"],\n        )\n        self.filtering_posterior = self.kalman_filter.filter(regression_problem)",
         "name": "filtsmooth.Smoothing.peakmem_smooth",
         "param_names": [
             "linearization_implementation"
@@ -213,10 +213,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "b673daf4dc18bd77496a2787ba02cd6d6cd9faf7abe02fa8144d1c8d5480cb9d"
+        "version": "11edfaa22915b57a6d19f3c02b21a20717d7a4700d464cbb8e316fef008ee374"
     },
     "filtsmooth.Smoothing.time_smooth": {
-        "code": "class Smoothing:\n    def time_smooth(self, linearization_implementation):\n        self.kalman_filter.smooth(filter_posterior=self.filtering_posterior)\n\n    def setup(self, linearization_implementation):\n        dynmod, measmod, initrv, info = load_pendulum()\n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        self.locations = np.arange(0.0, info[\"tmax\"], step=info[\"dt\"])\n        _, self.observations = statespace.generate_samples(\n            dynmod=dynmod, measmod=measmod, initrv=initrv, times=self.locations\n        )\n        self.regression_problem = problems.RegressionProblem(\n            observations=self.observations, locations=self.locations\n        )\n    \n        linearized_dynmod = _lin_method(dynmod)\n        linearized_measmod = _lin_method(measmod)\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=initrv,\n        )\n        self.filtering_posterior = self.kalman_filter.filter(self.regression_problem)",
+        "code": "class Smoothing:\n    def time_smooth(self, linearization_implementation):\n        self.kalman_filter.smooth(filter_posterior=self.filtering_posterior)\n\n    def setup(self, linearization_implementation):\n        measvar = 0.1024\n        initrv = randvars.Normal(np.ones(2), measvar * np.eye(2))\n        regression_problem, statespace_components = filtsmooth_zoo.pendulum(\n            measurement_variance=measvar,\n            timespan=(0.0, 4.0),\n            step=0.0075,\n            initrv=initrv,\n        )\n    \n        linearization, implementation = linearization_implementation\n        _lin_method = {\n            \"ekf\": functools.partial(\n                filtsmooth.DiscreteEKFComponent,\n                forward_implementation=implementation,\n                backward_implementation=implementation,\n            ),\n            \"ukf\": filtsmooth.DiscreteUKFComponent,\n        }[linearization]\n    \n        linearized_dynmod = _lin_method(statespace_components[\"dynamics_model\"])\n        linearized_measmod = _lin_method(statespace_components[\"measurement_model\"])\n    \n        self.kalman_filter = filtsmooth.Kalman(\n            dynamics_model=linearized_dynmod,\n            measurement_model=linearized_measmod,\n            initrv=statespace_components[\"initrv\"],\n        )\n        self.filtering_posterior = self.kalman_filter.filter(regression_problem)",
         "min_run_count": 2,
         "name": "filtsmooth.Smoothing.time_smooth",
         "number": 0,
@@ -236,7 +236,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "354eb0f9e6db47b59ccddda91a1e20c46d10e9e00d30de4790c3ceffbae05729",
+        "version": "97c5fa9d3c2908e3b228636cba9e00dd843ba4485bc159a8346734889c67db26",
         "warmup_time": -1
     },
     "ivpsolvers.IVPSolve.peakmem_solve": {
@@ -434,6 +434,420 @@
         "type": "time",
         "unit": "seconds",
         "version": "da540442fa5cdd201a5b76df0ad91f4ffcd4c63dee83a54c466fe9079ff0ef4d",
+        "warmup_time": -1
+    },
+    "linops.Cond.peakmem_cond": {
+        "code": "class Cond:\n    def peakmem_cond(self, operator: str, p):\n        self.linop.cond(p=p)\n\n    def setup(self, operator: str, p):\n        np.random.seed(42)\n    \n        if operator in NO_COND[p]:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "name": "linops.Cond.peakmem_cond",
+        "param_names": [
+            "operator",
+            "p"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ],
+            [
+                "2",
+                "'fro'",
+                "1",
+                "inf"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "de1c7de85ed1e087b13267ea364dcb4cd32dba38932bed7f4a2c0882a7eb2eee"
+    },
+    "linops.Cond.time_cond": {
+        "code": "class Cond:\n    def time_cond(self, operator: str, p):\n        self.linop.cond(p=p)\n\n    def setup(self, operator: str, p):\n        np.random.seed(42)\n    \n        if operator in NO_COND[p]:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "min_run_count": 2,
+        "name": "linops.Cond.time_cond",
+        "number": 0,
+        "param_names": [
+            "operator",
+            "p"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ],
+            [
+                "2",
+                "'fro'",
+                "1",
+                "inf"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "631616ea7ae3a99fc7663f184c65dcaa0cc9d7c676124dd895aef0e527f62dce",
+        "warmup_time": -1
+    },
+    "linops.Det.peakmem_det": {
+        "code": "class Det:\n    def peakmem_det(self, operator: str):\n        self.linop.det()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_DET:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "name": "linops.Det.peakmem_det",
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "0f7b7734cc4aae667f7420eb65bec0e2a8d93ace2b3ea9fcb0843c36db15df16"
+    },
+    "linops.Det.time_det": {
+        "code": "class Det:\n    def time_det(self, operator: str):\n        self.linop.det()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_DET:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "min_run_count": 2,
+        "name": "linops.Det.time_det",
+        "number": 0,
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "0c2242d4f54ee8a7e2a11f686e600bfaeeb88693a5f6bc7411c207cbb3790bc1",
+        "warmup_time": -1
+    },
+    "linops.Eigvals.peakmem_eigvals": {
+        "code": "class Eigvals:\n    def peakmem_eigvals(self, operator: str):\n        self.linop.eigvals()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_EIGVALS:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "name": "linops.Eigvals.peakmem_eigvals",
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "5e2311b3426897501464fb49abb571222d9019bb1365d1fa2fa43e067c966c82"
+    },
+    "linops.Eigvals.time_eigvals": {
+        "code": "class Eigvals:\n    def time_eigvals(self, operator: str):\n        self.linop.eigvals()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_EIGVALS:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "min_run_count": 2,
+        "name": "linops.Eigvals.time_eigvals",
+        "number": 0,
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "2a12534450fb9e4be1b0423e92b87d90d118d53107b12c60535b8819583479b2",
+        "warmup_time": -1
+    },
+    "linops.LogAbsDet.peakmem_logabsdet": {
+        "code": "class LogAbsDet:\n    def peakmem_logabsdet(self, operator: str):\n        self.linop.logabsdet()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_LOGABSDET:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "name": "linops.LogAbsDet.peakmem_logabsdet",
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "ff6088730132a29b2e64db868896fed674ecf65fa182e5c6058ac28033d7b895"
+    },
+    "linops.LogAbsDet.time_logabsdet": {
+        "code": "class LogAbsDet:\n    def time_logabsdet(self, operator: str):\n        self.linop.logabsdet()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_LOGABSDET:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "min_run_count": 2,
+        "name": "linops.LogAbsDet.time_logabsdet",
+        "number": 0,
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "673ebc1bf2101999d0cfcddf5a345f5e1e566000367d6186ea2117dfe35143a7",
+        "warmup_time": -1
+    },
+    "linops.MatMat.peakmem_matmat": {
+        "code": "class MatMat:\n    def peakmem_matmat(self, operator: str):\n        _ = self.linop @ self.mat\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        self.linop = get_linear_operator(operator)\n        self.mat = np.ones(\n            (self.linop.shape[1], 1000), dtype=self.linop.dtype, order=\"F\"\n        )",
+        "name": "linops.MatMat.peakmem_matmat",
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "a67815b3c335e81aaf6e577d2c5f75f8f43de98717463b518c6cdfe0ccf72ef6"
+    },
+    "linops.MatMat.time_matmat": {
+        "code": "class MatMat:\n    def time_matmat(self, operator: str):\n        _ = self.linop @ self.mat\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        self.linop = get_linear_operator(operator)\n        self.mat = np.ones(\n            (self.linop.shape[1], 1000), dtype=self.linop.dtype, order=\"F\"\n        )",
+        "min_run_count": 2,
+        "name": "linops.MatMat.time_matmat",
+        "number": 0,
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "56c6cafbf6cef4adf5006c7a1a0521b50bae2061dd48d6b6c3282747c7bcb0f0",
+        "warmup_time": -1
+    },
+    "linops.MatVec.peakmem_matvec": {
+        "code": "class MatVec:\n    def peakmem_matvec(self, operator: str):\n        _ = self.linop @ self.vec\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        self.linop = get_linear_operator(operator)\n        self.vec = np.ones(self.linop.shape[1], dtype=self.linop.dtype)",
+        "name": "linops.MatVec.peakmem_matvec",
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "870528f5173e3432055cbaf18a1613f907a2ff2557a5fbdce0b48fa69f0c0065"
+    },
+    "linops.MatVec.time_matvec": {
+        "code": "class MatVec:\n    def time_matvec(self, operator: str):\n        _ = self.linop @ self.vec\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        self.linop = get_linear_operator(operator)\n        self.vec = np.ones(self.linop.shape[1], dtype=self.linop.dtype)",
+        "min_run_count": 2,
+        "name": "linops.MatVec.time_matvec",
+        "number": 0,
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "cd9c1dd865449e5810e461b20ca04b8d8bc53c21ca294bda571d2645afece784",
+        "warmup_time": -1
+    },
+    "linops.Rank.peakmem_rank": {
+        "code": "class Rank:\n    def peakmem_rank(self, operator: str):\n        self.linop.rank()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_RANK:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "name": "linops.Rank.peakmem_rank",
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "a936825e1c63c8e988eddadac78ef6b3fe26a92aacf25a17915ee1bcf0cf7758"
+    },
+    "linops.Rank.time_rank": {
+        "code": "class Rank:\n    def time_rank(self, operator: str):\n        self.linop.rank()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_RANK:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "min_run_count": 2,
+        "name": "linops.Rank.time_rank",
+        "number": 0,
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "c2e4bd0b1fffac9da7371c0a548285b8966878da14c48b3549fd4a674f4d15b0",
+        "warmup_time": -1
+    },
+    "linops.Trace.peakmem_trace": {
+        "code": "class Trace:\n    def peakmem_trace(self, operator: str):\n        self.linop.trace()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_TRACE:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "name": "linops.Trace.peakmem_trace",
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "396ce90079c28a6a9c124c215a13a4cfe6b980dc09f35fc4ff4079af1353c5fd"
+    },
+    "linops.Trace.time_trace": {
+        "code": "class Trace:\n    def time_trace(self, operator: str):\n        self.linop.trace()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_TRACE:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
+        "min_run_count": 2,
+        "name": "linops.Trace.time_trace",
+        "number": 0,
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'diagonal_scalar'",
+                "'identity'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "ccb41a2f40430f0a7ab8e86147d9d890a75858e4828034dea3863de3714e8a50",
         "warmup_time": -1
     },
     "random_variables.Functions.time_distr_functions": {
