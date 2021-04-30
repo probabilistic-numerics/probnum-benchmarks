@@ -447,8 +447,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -478,8 +478,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -500,6 +500,56 @@
         "version": "631616ea7ae3a99fc7663f184c65dcaa0cc9d7c676124dd895aef0e527f62dce",
         "warmup_time": -1
     },
+    "linops.Construction.peakmem_matvec": {
+        "code": "class Construction:\n    def peakmem_matvec(self, operator: str):\n        get_linear_operator(operator)\n\n    def setup(self, operator: str):\n        np.random.seed(42)",
+        "name": "linops.Construction.peakmem_matvec",
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'identity'",
+                "'isotropic_scaling'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "ae87a369dcccf6af4c938b268cd8228960e7357b16e4f2fbd91d85b5203d8e7c"
+    },
+    "linops.Construction.time_construction": {
+        "code": "class Construction:\n    def time_construction(self, operator: str):\n        get_linear_operator(operator)\n\n    def setup(self, operator: str):\n        np.random.seed(42)",
+        "min_run_count": 2,
+        "name": "linops.Construction.time_construction",
+        "number": 0,
+        "param_names": [
+            "operator"
+        ],
+        "params": [
+            [
+                "'matrix'",
+                "'matrix_sparse'",
+                "'identity'",
+                "'isotropic_scaling'",
+                "'kronecker'",
+                "'symmetric_kronecker_distinct_factors'",
+                "'symmetric_kronecker_identical_factors'"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "a30599dfc07b2fc54d7dd57b61f6f291d5be098be4561d33c6a4cfe87f727eee",
+        "warmup_time": -1
+    },
     "linops.Det.peakmem_det": {
         "code": "class Det:\n    def peakmem_det(self, operator: str):\n        self.linop.det()\n\n    def setup(self, operator: str):\n        np.random.seed(42)\n    \n        if operator in NO_DET:\n            raise NotImplementedError()\n    \n        self.linop = get_linear_operator(operator)",
         "name": "linops.Det.peakmem_det",
@@ -510,8 +560,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -534,8 +584,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -560,8 +610,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -584,8 +634,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -610,8 +660,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -634,8 +684,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -660,8 +710,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -684,8 +734,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -710,8 +760,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -734,8 +784,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -760,8 +810,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -784,8 +834,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -810,8 +860,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
@@ -834,8 +884,8 @@
             [
                 "'matrix'",
                 "'matrix_sparse'",
-                "'diagonal_scalar'",
                 "'identity'",
+                "'isotropic_scaling'",
                 "'kronecker'",
                 "'symmetric_kronecker_distinct_factors'",
                 "'symmetric_kronecker_identical_factors'"
