@@ -355,52 +355,51 @@
         "version": "bd80bb62c96bc059c77c591c8a2f9c501cce5fe29dd92efb750ce55f0ada226e",
         "warmup_time": -1
     },
-    "linearsolvers.LinSolve.mem_solve": {
-        "code": "class LinSolve:\n    def mem_solve(self, system):\n        \"\"\"Time solving a linear system.\"\"\"\n        problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            (\n                self.A,\n                self.b,\n            ) = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = SPD_MATRIX_5x5\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
-        "name": "linearsolvers.LinSolve.mem_solve",
-        "param_names": [
-            "system"
-        ],
-        "params": [
-            [
-                "'sparse'",
-                "'dense'"
-            ]
-        ],
-        "timeout": 60.0,
-        "type": "memory",
-        "unit": "bytes",
-        "version": "339b33f3828c63a96101d46a5fc0516e96c6493bd4c7299a1d1de5ae414517ff"
-    },
     "linearsolvers.LinSolve.peakmem_solve": {
-        "code": "class LinSolve:\n    def peakmem_solve(self, system):\n        \"\"\"Time solving a linear system.\"\"\"\n        problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            (\n                self.A,\n                self.b,\n            ) = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = SPD_MATRIX_5x5\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
+        "code": "class LinSolve:\n    def peakmem_solve(self, linsys, dim):\n        problinsolve(A=self.linsys.A, b=self.linsys.b)\n\n    def setup(self, linsys, dim):\n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        xhat, _, _, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.xhat = xhat",
         "name": "linearsolvers.LinSolve.peakmem_solve",
         "param_names": [
-            "system"
+            "linsys",
+            "dim"
         ],
         "params": [
             [
+                "'dense'",
                 "'sparse'",
-                "'dense'"
+                "'linop'"
+            ],
+            [
+                "100",
+                "1000",
+                "10000",
+                "100000"
             ]
         ],
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "6647c7e69e7c7de96befd7f8e9df8d0cbef4865c223a4c915786b12c84cb92c2"
+        "version": "319e4cd5c37e9c2c9c99d62d7ce07de29eccf4bc310801d1b6efac1d45c81d0e"
     },
     "linearsolvers.LinSolve.time_solve": {
-        "code": "class LinSolve:\n    def time_solve(self, system):\n        \"\"\"Time solving a linear system.\"\"\"\n        problinsolve(A=self.A, b=self.b)\n\n    def setup(self, system):\n        # Seed\n        np.random.seed(42)\n    \n        if system == \"sparse\":\n            (\n                self.A,\n                self.b,\n            ) = load_poisson_linear_system()\n        elif system == \"dense\":\n            self.A = SPD_MATRIX_5x5\n            self.b = np.random.normal(size=self.A.shape[0])\n        elif system == \"large-scale\":\n            self.A = None\n            self.b = None",
+        "code": "class LinSolve:\n    def time_solve(self, linsys, dim):\n        problinsolve(A=self.linsys.A, b=self.linsys.b)\n\n    def setup(self, linsys, dim):\n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        xhat, _, _, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.xhat = xhat",
         "min_run_count": 2,
         "name": "linearsolvers.LinSolve.time_solve",
         "number": 0,
         "param_names": [
-            "system"
+            "linsys",
+            "dim"
         ],
         "params": [
             [
+                "'dense'",
                 "'sparse'",
-                "'dense'"
+                "'linop'"
+            ],
+            [
+                "100",
+                "1000",
+                "10000",
+                "100000"
             ]
         ],
         "processes": 2,
@@ -409,22 +408,141 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "00e14040e21d8eb565e633cf998a4aa266616e92f9a884480a4cb8dd4050545a",
+        "version": "5d87248d348027d440cc249ddc3fc11d54b0ff028f4bca3dc6f17ba6533a7f84",
         "warmup_time": -1
     },
-    "linearsolvers.PosteriorDist.time_sample": {
-        "code": "class PosteriorDist:\n    def time_sample(self, output):\n        \"\"\"Time sampling from the posterior distribution.\"\"\"\n        if output == \"solution\":\n            self.xhat.sample(self.n_samples)\n        elif output == \"matrix\":\n            self.Ahat.sample(self.n_samples)\n        elif output == \"matrix_inverse\":\n            self.Ainvhat.sample(self.n_samples)\n\n    def setup(self, output):\n        # pylint: disable=invalid-name\n    \n        # Sparse system\n        self.A, self.b = load_poisson_linear_system()\n    \n        # Solve linear system\n        self.xhat, self.Ahat, self.Ainvhat, _ = problinsolve(A=self.A, b=self.b)\n    \n        # Benchmark parameters\n        self.n_samples = 10",
-        "min_run_count": 2,
-        "name": "linearsolvers.PosteriorDist.time_sample",
-        "number": 0,
+    "linearsolvers.LinSolve.track_error_2norm": {
+        "code": "class LinSolve:\n    def track_error_2norm(self, linsys, dim):\n        return np.linalg.norm(self.linsys.solution - self.xhat.mean)\n\n    def setup(self, linsys, dim):\n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        xhat, _, _, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.xhat = xhat",
+        "name": "linearsolvers.LinSolve.track_error_2norm",
         "param_names": [
-            "output"
+            "linsys",
+            "dim"
         ],
         "params": [
             [
-                "'solution'",
-                "'matrix'",
-                "'matrix_inverse'"
+                "'dense'",
+                "'sparse'",
+                "'linop'"
+            ],
+            [
+                "100",
+                "1000",
+                "10000",
+                "100000"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit",
+        "version": "62950c1f4841d07999bebd7c23e33a98f0059a7a7dec13308215c168bc6cb7d5"
+    },
+    "linearsolvers.LinSolve.track_error_Anorm": {
+        "code": "class LinSolve:\n    def track_error_Anorm(self, linsys, dim):\n        diff = self.linsys.solution - self.xhat.mean\n        return np.sqrt(np.inner(diff, self.linsys.A @ diff))\n\n    def setup(self, linsys, dim):\n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        xhat, _, _, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.xhat = xhat",
+        "name": "linearsolvers.LinSolve.track_error_Anorm",
+        "param_names": [
+            "linsys",
+            "dim"
+        ],
+        "params": [
+            [
+                "'dense'",
+                "'sparse'",
+                "'linop'"
+            ],
+            [
+                "100",
+                "1000",
+                "10000",
+                "100000"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit",
+        "version": "5f36841f0f7a7c6b0f61024b458950fccc82e2de80f1ee449550409b1be54335"
+    },
+    "linearsolvers.LinSolve.track_residual_norm": {
+        "code": "class LinSolve:\n    def track_residual_norm(self, linsys, dim):\n        return np.linalg.norm(self.linsys.A @ self.xhat.mean - self.linsys.b)\n\n    def setup(self, linsys, dim):\n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        xhat, _, _, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.xhat = xhat",
+        "name": "linearsolvers.LinSolve.track_residual_norm",
+        "param_names": [
+            "linsys",
+            "dim"
+        ],
+        "params": [
+            [
+                "'dense'",
+                "'sparse'",
+                "'linop'"
+            ],
+            [
+                "100",
+                "1000",
+                "10000",
+                "100000"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit",
+        "version": "518f263f8ed43bd7f935e933bc4b2ac101616e2d303f9a44c3129374070dcc48"
+    },
+    "linearsolvers.PosteriorBelief.peakmem_trace_cov": {
+        "code": "class PosteriorBelief:\n    def peakmem_trace_cov(self, linsys, dim, qoi):\n        self.qoi.cov.trace()\n\n    def setup(self, linsys, dim, qoi):\n    \n        if dim > 1000:\n            # Operations on the posterior for large matrices can be very memory intensive.\n            raise NotImplementedError()\n    \n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        x, A, Ainv, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.qoi = get_quantity_of_interest(qoi, x, A, Ainv)",
+        "name": "linearsolvers.PosteriorBelief.peakmem_trace_cov",
+        "param_names": [
+            "linsys",
+            "dim",
+            "qoi"
+        ],
+        "params": [
+            [
+                "'dense'",
+                "'sparse'",
+                "'linop'"
+            ],
+            [
+                "100",
+                "1000",
+                "10000",
+                "100000"
+            ],
+            [
+                "'x'",
+                "'A'",
+                "'Ainv'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "e25b9c45f357edb297758e211da0c31cb63da0523370679774072fd3d6a6d387"
+    },
+    "linearsolvers.PosteriorBelief.time_trace_cov": {
+        "code": "class PosteriorBelief:\n    def time_trace_cov(self, linsys, dim, qoi):\n        self.qoi.cov.trace()\n\n    def setup(self, linsys, dim, qoi):\n    \n        if dim > 1000:\n            # Operations on the posterior for large matrices can be very memory intensive.\n            raise NotImplementedError()\n    \n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        x, A, Ainv, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.qoi = get_quantity_of_interest(qoi, x, A, Ainv)",
+        "min_run_count": 2,
+        "name": "linearsolvers.PosteriorBelief.time_trace_cov",
+        "number": 0,
+        "param_names": [
+            "linsys",
+            "dim",
+            "qoi"
+        ],
+        "params": [
+            [
+                "'dense'",
+                "'sparse'",
+                "'linop'"
+            ],
+            [
+                "100",
+                "1000",
+                "10000",
+                "100000"
+            ],
+            [
+                "'x'",
+                "'A'",
+                "'Ainv'"
             ]
         ],
         "processes": 2,
@@ -433,7 +551,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "da540442fa5cdd201a5b76df0ad91f4ffcd4c63dee83a54c466fe9079ff0ef4d",
+        "version": "2462d533c7254a2600be1fb1ffce2b74104920b18a493224f71db7c05bf7ae92",
         "warmup_time": -1
     },
     "linops.Cond.peakmem_cond": {
