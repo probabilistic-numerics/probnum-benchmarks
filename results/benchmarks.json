@@ -1115,5 +1115,41 @@
         "version": "0e88b17462e8804ae5a3f1212d88ccb36de4d62d11e9e5bdf6137c30e7a8a127",
         "warmup_time": -1
     },
+    "randprocs.MarkovProcessSampling.time_sample": {
+        "code": "class MarkovProcessSampling:\n    def time_sample(self, lazy_linalg, len_trajectory, order, dimension):\n        with config(lazy_linalg=lazy_linalg):\n            self.markov_process.transition.jointly_transform_base_measure_realization_list_forward(\n                base_measure_realizations=self.base_measure_realization,\n                t=self.time_grid,\n                initrv=self.markov_process.initrv,\n                _diffusion_list=np.ones_like(self.time_grid[:-1]),\n            )\n\n    def setup(self, lazy_linalg, len_trajectory, order, dimension):\n        with config(lazy_linalg=lazy_linalg):\n            dynamics = statespace.IBM(\n                ordint=order,\n                spatialdim=dimension,\n                forward_implementation=\"classic\",\n                backward_implementation=\"classic\",\n            )\n    \n            measvar = 0.1024\n            initrv = randvars.Normal(\n                np.ones(dynamics.dimension),\n                measvar * linops.Identity(dynamics.dimension),\n            )\n    \n            time_domain = (0.0, float(len_trajectory))\n            self.time_grid = np.arange(*time_domain)\n            self.markov_process = randprocs.MarkovProcess(\n                initarg=time_domain[0], initrv=initrv, transition=dynamics\n            )\n    \n            rng = np.random.default_rng(seed=1)\n            self.base_measure_realization = scipy.stats.norm.rvs(\n                size=(self.time_grid.shape + initrv.shape),\n                random_state=rng,\n            )",
+        "min_run_count": 2,
+        "name": "randprocs.MarkovProcessSampling.time_sample",
+        "number": 0,
+        "param_names": [
+            "lazy_linalg",
+            "len_trajectory",
+            "order",
+            "dimension"
+        ],
+        "params": [
+            [
+                "True",
+                "False"
+            ],
+            [
+                "10"
+            ],
+            [
+                "5"
+            ],
+            [
+                "50",
+                "100"
+            ]
+        ],
+        "processes": 2,
+        "repeat": 0,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "9f2defa6e20f35a0176dfcbbc1ce5eb219466a6dd63e1b577142a7f612eed93f",
+        "warmup_time": -1
+    },
     "version": 2
 }
