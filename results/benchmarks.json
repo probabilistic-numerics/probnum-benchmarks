@@ -1152,12 +1152,12 @@
         "warmup_time": -1
     },
     "randprocs.MarkovProcessSampling.time_sample": {
-        "code": "class MarkovProcessSampling:\n    def time_sample(self, lazy_linalg, len_trajectory, num_derivatives, dimension):\n        with config(lazy_linalg=lazy_linalg):\n            self.markov_process.transition.jointly_transform_base_measure_realization_list_forward(\n                base_measure_realizations=self.base_measure_realization,\n                t=self.time_grid,\n                initrv=self.markov_process.initrv,\n                _diffusion_list=np.ones_like(self.time_grid[:-1]),\n            )\n\n    def setup(self, lazy_linalg, len_trajectory, num_derivatives, dimension):\n        with config(lazy_linalg=lazy_linalg):\n    \n            dynamics = randprocs.markov.integrator.IntegratedWienerTransition(\n                num_derivatives=num_derivatives,\n                wiener_process_dimension=dimension,\n                forward_implementation=\"classic\",\n                backward_implementation=\"classic\",\n            )\n    \n            measvar = 0.1024\n            initrv = randvars.Normal(\n                np.ones(dynamics.state_dimension),\n                measvar * linops.Identity(dynamics.state_dimension),\n            )\n    \n            time_domain = (0.0, float(len_trajectory))\n            self.time_grid = np.arange(*time_domain)\n            self.markov_process = randprocs.markov.MarkovProcess(\n                initarg=time_domain[0], initrv=initrv, transition=dynamics\n            )\n    \n            rng = np.random.default_rng(seed=1)\n            self.base_measure_realization = scipy.stats.norm.rvs(\n                size=(self.time_grid.shape + initrv.shape),\n                random_state=rng,\n            )",
+        "code": "class MarkovProcessSampling:\n    def time_sample(self, matrix_free, len_trajectory, num_derivatives, dimension):\n        with config(matrix_free=matrix_free):\n            self.markov_process.transition.jointly_transform_base_measure_realization_list_forward(\n                base_measure_realizations=self.base_measure_realization,\n                t=self.time_grid,\n                initrv=self.markov_process.initrv,\n                _diffusion_list=np.ones_like(self.time_grid[:-1]),\n            )\n\n    def setup(self, matrix_free, len_trajectory, num_derivatives, dimension):\n        with config(matrix_free=matrix_free):\n    \n            dynamics = randprocs.markov.integrator.IntegratedWienerTransition(\n                num_derivatives=num_derivatives,\n                wiener_process_dimension=dimension,\n                forward_implementation=\"classic\",\n                backward_implementation=\"classic\",\n            )\n    \n            measvar = 0.1024\n            initrv = randvars.Normal(\n                np.ones(dynamics.state_dimension),\n                measvar * linops.Identity(dynamics.state_dimension),\n            )\n    \n            time_domain = (0.0, float(len_trajectory))\n            self.time_grid = np.arange(*time_domain)\n            self.markov_process = randprocs.markov.MarkovProcess(\n                initarg=time_domain[0], initrv=initrv, transition=dynamics\n            )\n    \n            rng = np.random.default_rng(seed=1)\n            self.base_measure_realization = scipy.stats.norm.rvs(\n                size=(self.time_grid.shape + initrv.shape),\n                random_state=rng,\n            )",
         "min_run_count": 2,
         "name": "randprocs.MarkovProcessSampling.time_sample",
         "number": 0,
         "param_names": [
-            "lazy_linalg",
+            "matrix_free",
             "len_trajectory",
             "num_derivatives",
             "dimension"
@@ -1184,7 +1184,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "d1aeaee748493c4f32a4840f5e0d29583124e22358505eea3c3b73781d0ac2ba",
+        "version": "1f64c637d62893b5fc164dc841e616c0213ba19119df877044615779c75c5fb1",
         "warmup_time": -1
     },
     "version": 2
