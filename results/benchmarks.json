@@ -290,7 +290,7 @@
         "warmup_time": -1
     },
     "kernels.Kernels.peakmem_kernel_matrix": {
-        "code": "class Kernels:\n    def peakmem_kernel_matrix(self, kernel, n_datapoints):\n        \"\"\"Peak memory of sampling process.\"\"\"\n        self.kernel.matrix(self.data)\n\n    def setup(self, kernel, n_datapoints):\n        rng = np.random.default_rng(42)\n        self.input_dim = 100\n        self.data = rng.normal(size=(n_datapoints, self.input_dim))\n        self.kernel = get_kernel(kernel_name=kernel, input_dim=self.input_dim)",
+        "code": "class Kernels:\n    def peakmem_kernel_matrix(self, kernel, n_datapoints):\n        \"\"\"Peak memory of sampling process.\"\"\"\n        self.kernel.matrix(self.data)\n\n    def setup(self, kernel, n_datapoints):\n        rng = np.random.default_rng(42)\n        self.input_dim = 100\n        self.data = rng.normal(size=(n_datapoints, self.input_dim))\n        self.kernel = get_kernel(kernel_name=kernel, input_shape=self.input_dim)",
         "name": "kernels.Kernels.peakmem_kernel_matrix",
         "param_names": [
             "kernel",
@@ -317,10 +317,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "a779909f366fa7ad431c258c042493296506c3c8bcb8a5a5dd116a6d1dee7404"
+        "version": "59abd2be5d4c62c95b3ef8575b34933c1e59be602a11362cc04286d31c6478d4"
     },
     "kernels.Kernels.time_kernel_call": {
-        "code": "class Kernels:\n    def time_kernel_call(self, kernel, n_datapoints):\n        self.kernel(self.data, None)\n\n    def setup(self, kernel, n_datapoints):\n        rng = np.random.default_rng(42)\n        self.input_dim = 100\n        self.data = rng.normal(size=(n_datapoints, self.input_dim))\n        self.kernel = get_kernel(kernel_name=kernel, input_dim=self.input_dim)",
+        "code": "class Kernels:\n    def time_kernel_call(self, kernel, n_datapoints):\n        self.kernel(self.data, None)\n\n    def setup(self, kernel, n_datapoints):\n        rng = np.random.default_rng(42)\n        self.input_dim = 100\n        self.data = rng.normal(size=(n_datapoints, self.input_dim))\n        self.kernel = get_kernel(kernel_name=kernel, input_shape=self.input_dim)",
         "min_run_count": 2,
         "name": "kernels.Kernels.time_kernel_call",
         "number": 0,
@@ -352,11 +352,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "c18f07e52bb58422119c8ec9b2c9d8395b46159050d687144044599aa7f3844e",
+        "version": "42019084aab34cbb9ec72cecd3b59a71458ca47ba55999ba5e199a459cea825e",
         "warmup_time": -1
     },
     "kernels.Kernels.time_kernel_matrix": {
-        "code": "class Kernels:\n    def time_kernel_matrix(self, kernel, n_datapoints):\n        \"\"\"Times sampling from this distribution.\"\"\"\n        self.kernel.matrix(self.data)\n\n    def setup(self, kernel, n_datapoints):\n        rng = np.random.default_rng(42)\n        self.input_dim = 100\n        self.data = rng.normal(size=(n_datapoints, self.input_dim))\n        self.kernel = get_kernel(kernel_name=kernel, input_dim=self.input_dim)",
+        "code": "class Kernels:\n    def time_kernel_matrix(self, kernel, n_datapoints):\n        \"\"\"Times sampling from this distribution.\"\"\"\n        self.kernel.matrix(self.data)\n\n    def setup(self, kernel, n_datapoints):\n        rng = np.random.default_rng(42)\n        self.input_dim = 100\n        self.data = rng.normal(size=(n_datapoints, self.input_dim))\n        self.kernel = get_kernel(kernel_name=kernel, input_shape=self.input_dim)",
         "min_run_count": 2,
         "name": "kernels.Kernels.time_kernel_matrix",
         "number": 0,
@@ -388,7 +388,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "b227033c98beba5c9d9f79900fe0323331596c9f7f9c743a4b76277c6cbffffe",
+        "version": "2d303a1758d60e47604dc0d066034b8b0eee03a89161b746c9364441e5280b90",
         "warmup_time": -1
     },
     "linearsolvers.LinSolve.peakmem_solve": {
