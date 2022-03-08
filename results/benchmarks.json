@@ -498,7 +498,7 @@
         "version": "5f36841f0f7a7c6b0f61024b458950fccc82e2de80f1ee449550409b1be54335"
     },
     "linearsolvers.LinSolve.track_residual_norm": {
-        "code": "class LinSolve:\n    def track_residual_norm(self, linsys, dim):\n        return np.linalg.norm(self.linsys.A @ self.xhat.mean - self.linsys.b)\n\n    def setup(self, linsys, dim):\n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        xhat, _, _, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.xhat = xhat",
+        "code": "class LinSolve:\n    def track_residual_norm(self, linsys, dim):\n        return np.linalg.norm(self.linsys.b - self.linsys.A @ self.xhat.mean)\n\n    def setup(self, linsys, dim):\n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        xhat, _, _, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.xhat = xhat",
         "name": "linearsolvers.LinSolve.track_residual_norm",
         "param_names": [
             "linsys",
@@ -520,7 +520,7 @@
         "timeout": 60.0,
         "type": "track",
         "unit": "unit",
-        "version": "518f263f8ed43bd7f935e933bc4b2ac101616e2d303f9a44c3129374070dcc48"
+        "version": "7e0c2bff933e54fcd11cedb67106794de98326cd0935c576dec76a6a0f12ddd1"
     },
     "linearsolvers.PosteriorBelief.peakmem_trace_cov": {
         "code": "class PosteriorBelief:\n    def peakmem_trace_cov(self, linsys, dim, qoi):\n        self.qoi.cov.trace()\n\n    def setup(self, linsys, dim, qoi):\n    \n        if dim > 1000:\n            # Operations on the posterior for large matrices can be very memory intensive.\n            raise NotImplementedError()\n    \n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        x, A, Ainv, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.qoi = get_quantity_of_interest(qoi, x, A, Ainv)",
