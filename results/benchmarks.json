@@ -523,7 +523,7 @@
         "version": "7e0c2bff933e54fcd11cedb67106794de98326cd0935c576dec76a6a0f12ddd1"
     },
     "linearsolvers.PosteriorBelief.peakmem_trace_cov": {
-        "code": "class PosteriorBelief:\n    def peakmem_trace_cov(self, linsys, dim, qoi):\n        self.qoi.cov.trace()\n\n    def setup(self, linsys, dim, qoi):\n    \n        if dim > 1000:\n            # Operations on the posterior for large matrices can be very memory intensive.\n            raise NotImplementedError()\n    \n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        x, A, Ainv, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.qoi = get_quantity_of_interest(qoi, x, A, Ainv)",
+        "code": "class PosteriorBelief:\n    def peakmem_trace_cov(self, linsys, dim, qoi):\n        self.qoi.cov.trace()\n\n    def setup(self, linsys, dim, qoi):\n    \n        if dim > 1000:\n            # Operations on posterior for large matrices can be very memory-intensive\n            raise NotImplementedError()\n    \n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        x, A, Ainv, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.qoi = get_quantity_of_interest(qoi, x, A, Ainv)",
         "name": "linearsolvers.PosteriorBelief.peakmem_trace_cov",
         "param_names": [
             "linsys",
@@ -551,10 +551,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "e25b9c45f357edb297758e211da0c31cb63da0523370679774072fd3d6a6d387"
+        "version": "b0b9618fd7a4706683ca3659f8996e7cfad8c9d4d731b1508ed07f50468b578e"
     },
     "linearsolvers.PosteriorBelief.time_trace_cov": {
-        "code": "class PosteriorBelief:\n    def time_trace_cov(self, linsys, dim, qoi):\n        self.qoi.cov.trace()\n\n    def setup(self, linsys, dim, qoi):\n    \n        if dim > 1000:\n            # Operations on the posterior for large matrices can be very memory intensive.\n            raise NotImplementedError()\n    \n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        x, A, Ainv, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.qoi = get_quantity_of_interest(qoi, x, A, Ainv)",
+        "code": "class PosteriorBelief:\n    def time_trace_cov(self, linsys, dim, qoi):\n        self.qoi.cov.trace()\n\n    def setup(self, linsys, dim, qoi):\n    \n        if dim > 1000:\n            # Operations on posterior for large matrices can be very memory-intensive\n            raise NotImplementedError()\n    \n        self.linsys = get_linear_system(name=linsys, dim=dim)\n        x, A, Ainv, _ = problinsolve(A=self.linsys.A, b=self.linsys.b)\n        self.qoi = get_quantity_of_interest(qoi, x, A, Ainv)",
         "min_run_count": 2,
         "name": "linearsolvers.PosteriorBelief.time_trace_cov",
         "number": 0,
@@ -587,7 +587,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "2462d533c7254a2600be1fb1ffce2b74104920b18a493224f71db7c05bf7ae92",
+        "version": "8b6708e9345d744481901ceb8ec4cfde80b11f079c5ab7b855c2d65224189af4",
         "warmup_time": -1
     },
     "linops.Cond.peakmem_cond": {
@@ -1152,7 +1152,7 @@
         "warmup_time": -1
     },
     "randprocs.MarkovProcessSampling.time_sample": {
-        "code": "class MarkovProcessSampling:\n    def time_sample(self, matrix_free, len_trajectory, num_derivatives, dimension):\n        with config(matrix_free=matrix_free):\n            self.markov_process.transition.jointly_transform_base_measure_realization_list_forward(\n                base_measure_realizations=self.base_measure_realization,\n                t=self.time_grid,\n                initrv=self.markov_process.initrv,\n                _diffusion_list=np.ones_like(self.time_grid[:-1]),\n            )\n\n    def setup(self, matrix_free, len_trajectory, num_derivatives, dimension):\n        with config(matrix_free=matrix_free):\n    \n            dynamics = randprocs.markov.integrator.IntegratedWienerTransition(\n                num_derivatives=num_derivatives,\n                wiener_process_dimension=dimension,\n                forward_implementation=\"classic\",\n                backward_implementation=\"classic\",\n            )\n    \n            measvar = 0.1024\n            initrv = randvars.Normal(\n                np.ones(dynamics.state_dimension),\n                measvar * linops.Identity(dynamics.state_dimension),\n            )\n    \n            time_domain = (0.0, float(len_trajectory))\n            self.time_grid = np.arange(*time_domain)\n            self.markov_process = randprocs.markov.MarkovProcess(\n                initarg=time_domain[0], initrv=initrv, transition=dynamics\n            )\n    \n            rng = np.random.default_rng(seed=1)\n            self.base_measure_realization = scipy.stats.norm.rvs(\n                size=(self.time_grid.shape + initrv.shape),\n                random_state=rng,\n            )",
+        "code": "class MarkovProcessSampling:\n    def time_sample(self, matrix_free, len_trajectory, num_derivatives, dimension):\n        with config(matrix_free=matrix_free):\n            process = self.markov_process\n            process.transition.jointly_transform_base_measure_realization_list_forward(\n                base_measure_realizations=self.base_measure_realization,\n                t=self.time_grid,\n                initrv=self.markov_process.initrv,\n                _diffusion_list=np.ones_like(self.time_grid[:-1]),\n            )\n\n    def setup(self, matrix_free, len_trajectory, num_derivatives, dimension):\n        with config(matrix_free=matrix_free):\n    \n            dynamics = randprocs.markov.integrator.IntegratedWienerTransition(\n                num_derivatives=num_derivatives,\n                wiener_process_dimension=dimension,\n                forward_implementation=\"classic\",\n                backward_implementation=\"classic\",\n            )\n    \n            measvar = 0.1024\n            initrv = randvars.Normal(\n                np.ones(dynamics.state_dimension),\n                measvar * linops.Identity(dynamics.state_dimension),\n            )\n    \n            time_domain = (0.0, float(len_trajectory))\n            self.time_grid = np.arange(*time_domain)\n            self.markov_process = randprocs.markov.MarkovProcess(\n                initarg=time_domain[0], initrv=initrv, transition=dynamics\n            )\n    \n            rng = np.random.default_rng(seed=1)\n            self.base_measure_realization = scipy.stats.norm.rvs(\n                size=(self.time_grid.shape + initrv.shape),\n                random_state=rng,\n            )",
         "min_run_count": 2,
         "name": "randprocs.MarkovProcessSampling.time_sample",
         "number": 0,
@@ -1184,7 +1184,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "1f64c637d62893b5fc164dc841e616c0213ba19119df877044615779c75c5fb1",
+        "version": "e860bb8a0b236135cd7ea0d29c271ed4c6196cf8582b55debab8b6e47daf1081",
         "warmup_time": -1
     },
     "version": 2
